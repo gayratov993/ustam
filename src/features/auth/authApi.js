@@ -53,10 +53,14 @@ export const authApi = createApi({
       ),
     }),
 
+    updatePassword: builder.mutation({
+      queryFn: toResponseArgs((sb, { password }) => sb.auth.updateUser({ password })),
+    }),
+
     updateProfile: builder.mutation({
       queryFn: toResponseArgs(async (sb, profile) => {
         const { id, ...data } = profile
-        return sb.from('profiles').update(data).eq('id', id)
+        return sb.from('profiles').update(data).eq('id', id).select().single()
       }),
       invalidatesTags: ['Profile'],
     }),
@@ -70,7 +74,12 @@ export const authApi = createApi({
           .upload(path, file, { upsert: true })
         if (upError) throw upError
         const { data: publicUrl } = sb.storage.from('avatars').getPublicUrl(path)
-        return sb.from('profiles').update({ avatar_url: publicUrl.publicUrl }).eq('id', userId)
+        return sb
+          .from('profiles')
+          .update({ avatar_url: publicUrl.publicUrl })
+          .eq('id', userId)
+          .select()
+          .single()
       }),
       invalidatesTags: ['Profile'],
     }),
@@ -83,6 +92,7 @@ export const {
   useRegisterMutation,
   useLogoutMutation,
   useResetPasswordMutation,
+  useUpdatePasswordMutation,
   useUpdateProfileMutation,
   useUpdateAvatarMutation,
 } = authApi

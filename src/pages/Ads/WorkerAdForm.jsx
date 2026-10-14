@@ -13,7 +13,7 @@ import { useGetCategoriesQuery } from '@/features/jobs/jobsApi'
 import {
   useCreateWorkerAdMutation,
   useUpdateWorkerAdMutation,
-  useGetMyWorkerAdsQuery,
+  useGetWorkerAdQuery,
 } from '@/features/ads/workerAdsApi'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -25,8 +25,10 @@ function WorkerAdForm() {
   const isEdit = Boolean(id)
 
   const { data: categories } = useGetCategoriesQuery()
-  const { data: myAds } = useGetMyWorkerAdsQuery({ workerId: user?.id }, { skip: !user })
-  const ad = isEdit ? myAds?.find((a) => a.id === id) : null
+  const { data: ad, isLoading: adLoading } = useGetWorkerAdQuery(
+    { id },
+    { skip: !isEdit }
+  )
   const [createAd, { isLoading: creating, error: createError }] = useCreateWorkerAdMutation()
   const [updateAd, { isLoading: updating, error: updateError }] = useUpdateWorkerAdMutation()
 
@@ -80,8 +82,10 @@ function WorkerAdForm() {
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t('ads.subtitle')}</p>
       </motion.div>
 
-      {isEdit && !ad ? (
+      {isEdit && adLoading ? (
         <p className="py-10 text-center text-slate-400">{t('common.loading')}</p>
+      ) : isEdit && !ad ? (
+        <p className="py-10 text-center text-slate-400">{t('common.noData')}</p>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5" noValidate>
           {(createError || updateError) && (

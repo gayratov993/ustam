@@ -1,10 +1,19 @@
 import { useTranslation } from 'react-i18next'
 import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 import { motion } from 'framer-motion'
 import { Send, MessageSquare } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
-import { useGetConversationsQuery, useGetMessagesQuery, useGetChatUserQuery, useSendMessageMutation } from '@/features/chat/chatApi'
+import {
+  chatApi,
+  useGetConversationsQuery,
+  useGetMessagesQuery,
+  useGetChatUserQuery,
+  useMarkConversationReadMutation,
+  useSendMessageMutation,
+} from '@/features/chat/chatApi'
+import { getSupabase, isSupabaseConfigured } from '@/lib/supabaseClient'
 import { Avatar } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -14,6 +23,7 @@ import { cn } from '@/lib/utils'
 function Chat() {
   const { t } = useTranslation()
   const { user } = useAuth()
+  const dispatch = useDispatch()
   const [searchParams] = useSearchParams()
   const [activeId, setActiveId] = useState(searchParams.get('with') || null)
   const bottomRef = useRef(null)
@@ -36,11 +46,40 @@ function Chat() {
     { skip: !activeId || !user }
   )
   const [sendMessage, { isLoading }] = useSendMessageMutation()
+  const [markRead] = useMarkConversationReadMutation()
   const [text, setText] = useState('')
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  useEffect(() => {
+    if (!user?.id || !activeId || !messages?.length) return
+    const hasUnread = messages.some((m) => m.receiver_id === user.id && !m.is_read)
+    if (hasUnread) markRead({ userId: user.id, otherId: activeId })
+  }, [messages, activeId, user, markRead])
+
+  useEffect(() => {
+    if (!user?.id || !isSupabaseConfigured) return
+    const sb = getSupabase()
+    const invalidate = () => dispatch(chatApi.util.invalidateTags(['Messages', 'Unread']))
+    const channel = sb
+      .channel(`chat-messages-${user.id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'messages', filter: `receiver_id=eq.${user.id}` },
+        invalidate
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'messages', filter: `sender_id=eq.${user.id}` },
+        invalidate
+      )
+      .subscribe()
+    return () => {
+      sb.removeChannel(channel)
+    }
+  }, [user?.id, dispatch])
 
   const handleSend = async (e) => {
     e.preventDefault()
@@ -53,7 +92,12 @@ function Chat() {
     if (!res.error) setText('')
   }
 
-  const active = conversations?.find((c) => c.id === activeId) || chatUser
+  const activeConvo = conversations?.find((c) => c.id === activeId)
+  const active = activeConvo
+    ? { name: activeConvo.name, avatar: activeConvo.avatar }
+    : chatUser
+      ? { name: chatUser.full_name, avatar: chatUser.avatar_url }
+      : null
 
   return (
     <div className="container-app py-8">

@@ -15,6 +15,10 @@ export const forgotPasswordSchema = z.object({
   email: z.string().email('auth.invalidEmail'),
 })
 
+export const resetPasswordSchema = z.object({
+  password: z.string().min(6, 'auth.passwordMin'),
+})
+
 export const jobSchema = z.object({
   title: z.string().min(5, 'common.required'),
   description: z.string().min(10, 'common.required'),

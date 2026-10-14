@@ -47,7 +47,6 @@ function Toast() {
 
 function useSessionManager() {
   const dispatch = useDispatch()
-  const userId = useSelector((state) => state.auth.user?.id)
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -55,50 +54,52 @@ function useSessionManager() {
       return
     }
     const sb = getSupabase()
-    dispatch(setLoading(true))
+    let active = true
+
+    const loadProfile = async (uid) => {
+      if (!active) return
+      if (!uid) {
+        dispatch(setLoading(false))
+        return
+      }
+      dispatch(setLoading(true))
+      const { data, error } = await sb
+        .from('profiles')
+        .select('*')
+        .eq('id', uid)
+        .maybeSingle()
+      if (!active) return
+      if (!error) dispatch(setProfile(data))
+      dispatch(setLoading(false))
+    }
 
     sb.auth
       .getSession()
       .then(({ data }) => {
+        if (!active) return
         dispatch(setSession(data.session))
-        if (data.session?.user) {
-          return sb
-            .from('profiles')
-            .select('*')
-            .eq('id', data.session.user.id)
-            .maybeSingle()
-        }
-        return null
+        return loadProfile(data.session?.user?.id)
       })
-      .then((res) => {
-        if (res && !res.error) dispatch(setProfile(res.data))
-        dispatch(setLoading(false))
-      })
-      .catch(() => dispatch(setLoading(false)))
+      .catch(() => active && dispatch(setLoading(false)))
 
     const { data: listener } = sb.auth.onAuthStateChange((_event, session) => {
+      if (!active) return
       dispatch(setSession(session))
-      if (!session) dispatch(logout())
+      if (!session) {
+        dispatch(logout())
+        dispatch(setLoading(false))
+        return
+      }
+      // Auth callback ichida Supabase'ga murojaat qilish deadlock beradi —
+      // shuning uchun profil yuklashni keyingi tick'ga suramiz.
+      setTimeout(() => loadProfile(session.user.id), 0)
     })
 
-    return () => listener.subscription.unsubscribe()
-  }, [dispatch])
-
-  useEffect(() => {
-    if (!userId) return
-    const sb = getSupabase()
-    let cancelled = false
-    sb.from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle()
-      .then((res) => {
-        if (!cancelled && !res.error) dispatch(setProfile(res.data))
-      })
     return () => {
-      cancelled = true
+      active = false
+      listener.subscription.unsubscribe()
     }
-  }, [userId, dispatch])
+  }, [dispatch])
 }
 
 function AnimatedOutlet() {

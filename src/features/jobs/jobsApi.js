@@ -63,15 +63,24 @@ export const jobsApi = createApi({
           .eq('employer_id', employerId)
           .order('created_at', { ascending: false })
         if (error) throw error
-        const withCounts = await Promise.all(
-          (data ?? []).map(async (job) => {
-            const { count } = await sb
-              .from('applications')
-              .select('*', { count: 'exact', head: true })
-              .eq('job_id', job.id)
-            return { ...job, application_count: count ?? 0 }
-          })
-        )
+        const jobs = data ?? []
+        if (!jobs.length) return { data: [] }
+        const { data: apps, error: appError } = await sb
+          .from('applications')
+          .select('job_id, status')
+          .in('job_id', jobs.map((j) => j.id))
+        if (appError) throw appError
+        const counts = {}
+        const accepted = {}
+        for (const a of apps ?? []) {
+          counts[a.job_id] = (counts[a.job_id] || 0) + 1
+          if (a.status === 'accepted') accepted[a.job_id] = (accepted[a.job_id] || 0) + 1
+        }
+        const withCounts = jobs.map((job) => ({
+          ...job,
+          application_count: counts[job.id] ?? 0,
+          accepted_count: accepted[job.id] ?? 0,
+        }))
         return { data: withCounts }
       }),
       providesTags: ['Jobs'],

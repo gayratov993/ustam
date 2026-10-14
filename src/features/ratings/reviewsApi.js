@@ -1,9 +1,10 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { toResponseArgs } from '../../lib/supabaseUtils'
+import { profilesApi } from '../profile/profileApi'
 
 export const reviewsApi = createApi({
   reducerPath: 'reviewsApi',
-  tagTypes: ['Reviews', 'Profile'],
+  tagTypes: ['Reviews'],
   endpoints: (builder) => ({
     getReviews: builder.query({
       queryFn: toResponseArgs(async (sb, { revieweeId }) => {
@@ -24,7 +25,15 @@ export const reviewsApi = createApi({
       queryFn: toResponseArgs(async (sb, review) => {
         return sb.from('reviews').insert(review).select().single()
       }),
-      invalidatesTags: ['Reviews', 'Profile'],
+      invalidatesTags: ['Reviews'],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled
+          dispatch(profilesApi.util.invalidateTags(['Profile']))
+        } catch {
+          // xato bo'lsa profil keshini yangilash shart emas
+        }
+      },
     }),
   }),
 })

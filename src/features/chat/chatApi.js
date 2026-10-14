@@ -3,7 +3,7 @@ import { toResponseArgs } from '../../lib/supabaseUtils'
 
 export const chatApi = createApi({
   reducerPath: 'chatApi',
-  tagTypes: ['Messages'],
+  tagTypes: ['Messages', 'Unread'],
   endpoints: (builder) => ({
     getConversations: builder.query({
       queryFn: toResponseArgs(async (sb, { userId }) => {
@@ -59,11 +59,38 @@ export const chatApi = createApi({
       }),
     }),
 
+    getUnreadCount: builder.query({
+      queryFn: toResponseArgs(async (sb, { userId }) => {
+        const { count, error } = await sb
+          .from('messages')
+          .select('id', { count: 'exact', head: true })
+          .eq('receiver_id', userId)
+          .eq('is_read', false)
+        if (error) throw error
+        return { data: count ?? 0 }
+      }),
+      providesTags: ['Unread'],
+    }),
+
+    markConversationRead: builder.mutation({
+      queryFn: toResponseArgs(async (sb, { userId, otherId }) => {
+        const { error } = await sb
+          .from('messages')
+          .update({ is_read: true })
+          .eq('receiver_id', userId)
+          .eq('sender_id', otherId)
+          .eq('is_read', false)
+        if (error) throw error
+        return { data: true }
+      }),
+      invalidatesTags: ['Unread'],
+    }),
+
     sendMessage: builder.mutation({
       queryFn: toResponseArgs(async (sb, message) => {
         return sb.from('messages').insert(message).select().single()
       }),
-      invalidatesTags: ['Messages'],
+      invalidatesTags: ['Messages', 'Unread'],
     }),
   }),
 })
@@ -72,5 +99,7 @@ export const {
   useGetConversationsQuery,
   useGetMessagesQuery,
   useGetChatUserQuery,
+  useGetUnreadCountQuery,
+  useMarkConversationReadMutation,
   useSendMessageMutation,
 } = chatApi

@@ -1,5 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { toResponseArgs } from '../../lib/supabaseUtils'
+import { jobsApi } from '../jobs/jobsApi'
 
 export const applicationsApi = createApi({
   reducerPath: 'applicationsApi',
@@ -49,17 +50,17 @@ export const applicationsApi = createApi({
           .select('*, job:jobs(employer_id, title)')
           .single()
         if (error) throw error
-        if (data.job?.employer_id) {
-          await sb.from('notifications').insert({
-            user_id: data.job.employer_id,
-            type: 'new_application',
-            content: 'new_application',
-            ref_id: data.job_id,
-          })
-        }
         return { data }
       }),
       invalidatesTags: ['Applications'],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled
+          dispatch(jobsApi.util.invalidateTags(['Jobs']))
+        } catch {
+          // xato bo'lsa joblar keshini yangilash shart emas
+        }
+      },
     }),
 
     updateApplication: builder.mutation({
@@ -71,15 +72,17 @@ export const applicationsApi = createApi({
           .select('*, job:jobs(employer_id, title), worker_id')
           .single()
         if (error) throw error
-        await sb.from('notifications').insert({
-          user_id: data.worker_id,
-          type: status === 'accepted' ? 'application_accepted' : 'application_rejected',
-          content: status === 'accepted' ? 'application_accepted' : 'application_rejected',
-          ref_id: data.job_id,
-        })
         return { data }
       }),
-      invalidatesTags: ['Applications', 'Jobs'],
+      invalidatesTags: ['Applications'],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled
+          dispatch(jobsApi.util.invalidateTags(['Jobs']))
+        } catch {
+          // xato bo'lsa joblar keshini yangilash shart emas
+        }
+      },
     }),
   }),
 })

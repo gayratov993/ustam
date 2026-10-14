@@ -19,18 +19,31 @@ export const profilesApi = createApi({
           .eq('worker_id', id)
         if (catError) throw catError
         const { data: rating } = await sb.rpc('get_worker_rating', { worker: id })
-        const { data: completedJobs, error: jobsError } = await sb
-          .from('applications')
-          .select('job:jobs(id, status, title, price, created_at)', { count: 'exact', head: true })
-          .eq('worker_id', id)
-          .eq('status', 'accepted')
-        if (jobsError) throw jobsError
+
+        // Bajarilgan ishlar soni. Agar maxsus RPC hali bazaga qo'shilmagan
+        // bo'lsa, oddiy count so'roviga qaytamiz (migration shart emas).
+        let completedJobs = 0
+        const { data: completedData, error: completedError } = await sb.rpc(
+          'get_worker_completed_jobs',
+          { worker: id }
+        )
+        if (completedError) {
+          const { count } = await sb
+            .from('applications')
+            .select('*', { count: 'exact', head: true })
+            .eq('worker_id', id)
+            .eq('status', 'accepted')
+          completedJobs = count ?? 0
+        } else {
+          completedJobs = completedData ?? 0
+        }
+
         return {
           data: {
             profile,
             categories: workerCategories?.map((c) => c.categories) ?? [],
             rating: rating?.[0] ?? { avg_rating: 0, review_count: 0 },
-            completedJobs: completedJobs?.length ?? 0,
+            completedJobs,
           },
         }
       }),
@@ -95,7 +108,19 @@ export const profilesApi = createApi({
         }
         return { data: categoryIds }
       }),
-      invalidatesTags: ['WorkerCategories'],
+      invalidatesTags: ['WorkerCategories', 'Profile'],
+    }),
+
+    getWorkerCategories: builder.query({
+      queryFn: toResponseArgs(async (sb, workerId) => {
+        const { data, error } = await sb
+          .from('worker_categories')
+          .select('category_id')
+          .eq('worker_id', workerId)
+        if (error) throw error
+        return { data: (data ?? []).map((row) => row.category_id) }
+      }),
+      providesTags: ['WorkerCategories'],
     }),
   }),
 })
@@ -105,4 +130,5 @@ export const {
   useGetWorkersQuery,
   useUpdateProfileMutation,
   useSetWorkerCategoriesMutation,
+  useGetWorkerCategoriesQuery,
 } = profilesApi

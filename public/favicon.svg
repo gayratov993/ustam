@@ -5,7 +5,6 @@
       <stop offset="1" stop-color="#7C3AED"/>
     </linearGradient>
   </defs>
-  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#g)"/>
-  <path d="M20 42V22M32 42V22M44 42V22" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
-  <path d="M14 42h36" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+  <rect width="64" height="64" rx="16" fill="url(#g)"/>
+  <path d="M20 18v16a12 12 0 0 0 24 0V18" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
 </svg>

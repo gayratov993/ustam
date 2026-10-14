@@ -1,10 +1,11 @@
 import { useTranslation } from 'react-i18next'
 import { NavLink } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Home, Briefcase, LayoutDashboard, Bell, Megaphone } from 'lucide-react'
+import { Home, Briefcase, LayoutDashboard, Bell, Megaphone, MessageSquare } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
 import { useGetNotificationsQuery } from '@/features/notifications/notificationsApi'
+import { useGetUnreadCountQuery } from '@/features/chat/chatApi'
 
 function BottomNav() {
   const { t } = useTranslation()
@@ -14,18 +15,23 @@ function BottomNav() {
     { skip: !user }
   )
   const unread = notifications?.filter((n) => !n.is_read).length || 0
+  const { data: unreadMessages = 0 } = useGetUnreadCountQuery(
+    { userId: user?.id },
+    { skip: !user, pollingInterval: 30000 }
+  )
 
   const items = [
     { to: '/', label: t('nav.home'), icon: Home, end: true },
     { to: '/jobs', label: t('nav.jobs'), icon: Briefcase, end: false },
     { to: '/ads', label: t('nav.ads'), icon: Megaphone, end: false },
     { to: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, end: false },
+    { to: '/chat', label: t('nav.chat'), icon: MessageSquare, end: false, badge: unreadMessages },
     { to: '/notifications', label: t('nav.notifications'), icon: Bell, end: false, badge: unread },
   ]
 
   return (
     <nav className="mobile-safe fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/70 bg-white/95 backdrop-blur-lg dark:border-slate-800 dark:bg-slate-900/95 md:hidden">
-      <div className="grid grid-cols-5">
+      <div className="grid grid-cols-6">
         {items.map((item) => (
           <NavLink
             key={item.to}

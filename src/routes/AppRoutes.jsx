@@ -2,12 +2,14 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { ProtectedRoute } from './ProtectedRoute'
 import { useAuth } from '@/hooks/useAuth'
+import { Loader } from '@/components/ui/loader'
 import Landing from '@/pages/Landing/Landing'
 import NotFound from '@/pages/NotFound/NotFound'
 import Login from '@/pages/Auth/Login'
 import Register from '@/pages/Auth/Register'
 import RoleSelect from '@/pages/Auth/RoleSelect'
 import ForgotPassword from '@/pages/Auth/ForgotPassword'
+import ResetPassword from '@/pages/Auth/ResetPassword'
 import Onboarding from '@/pages/Auth/Onboarding'
 import JobsList from '@/pages/Jobs/JobsList'
 import JobDetail from '@/pages/Jobs/JobDetail'
@@ -27,10 +29,18 @@ import Settings from '@/pages/Settings/Settings'
 import MyProfile from '@/pages/Settings/MyProfile'
 
 function RequireRoleDashboard() {
-  const { profile } = useAuth()
+  const { profile, isLoading, user } = useAuth()
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader />
+      </div>
+    )
+  }
+  if (!user) return <Navigate to="/auth/login" replace />
   if (profile?.role === 'employer') return <EmployerDashboard />
   if (profile?.role === 'worker') return <WorkerDashboard />
-  return <Navigate to="/jobs" replace />
+  return <Navigate to="/auth/role-select" replace />
 }
 
 function AppRoutes() {
@@ -42,6 +52,7 @@ function AppRoutes() {
         <Route path="/auth/register" element={<Register />} />
         <Route path="/auth/role-select" element={<RoleSelect />} />
         <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+        <Route path="/auth/reset-password" element={<ResetPassword />} />
         <Route
           path="/auth/onboarding"
           element={<ProtectedRoute>{<Onboarding />}</ProtectedRoute>}

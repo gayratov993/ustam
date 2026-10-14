@@ -32,7 +32,7 @@ function WorkerProfile() {
   const navigate = useNavigate()
   const { user } = useAuth()
 
-  const { data, isLoading } = useGetProfileQuery({ id }, { skip: !id })
+  const { data, isLoading, error } = useGetProfileQuery({ id }, { skip: !id })
   const { data: reviews } = useGetReviewsQuery({ revieweeId: id }, { skip: !id })
 
   const isOwnProfile = user?.id === id
@@ -53,7 +53,11 @@ function WorkerProfile() {
   if (!profile) {
     return (
       <div className="container-app py-8">
-        <EmptyState icon={Briefcase} title={t('common.noData')} description="" />
+        <EmptyState
+          icon={Briefcase}
+          title={t('common.noData')}
+          description={error ? error.message || JSON.stringify(error) : ''}
+        />
       </div>
     )
   }

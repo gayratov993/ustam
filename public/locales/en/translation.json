@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "WorkUp",
+    "name": "Ustam",
     "tagline": "Find daily work or hire workers"
   },
   "nav": {
@@ -16,7 +16,8 @@
     "logout": "Log out",
     "login": "Log in",
     "register": "Sign up",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "chat": "Messages"
   },
   "common": {
     "loading": "Loading...",
@@ -73,12 +74,18 @@
     "categories": "Profession categories",
     "selectCategories": "Select categories",
     "skip": "Skip for now",
-    "phoneNotValid": "Invalid phone format"
+    "phoneNotValid": "Invalid phone format",
+    "resetTitle": "Set a new password",
+    "resetSubtitle": "Enter a new password for your account",
+    "newPassword": "New password",
+    "updatePassword": "Update password",
+    "passwordUpdated": "Password updated successfully",
+    "resetInvalid": "Reset link is invalid or has expired"
   },
   "landing": {
     "heroTitle1": "Find daily work",
     "heroTitle2": "or hire a worker",
-    "heroSubtitle": "WorkUp connects nearby workers and employers — from builders to cleaners.",
+    "heroSubtitle": "Ustam connects nearby workers and employers — from builders to cleaners.",
     "ctaWorker": "I'm looking for work",
     "ctaEmployer": "I need a worker",
     "howItWorks": "How it works?",
@@ -192,6 +199,7 @@
   "applications": {
     "title": "My applications",
     "subtitle": "All your applications with status",
+    "all": "All",
     "pending": "Pending",
     "accepted": "Accepted",
     "rejected": "Rejected",
@@ -224,7 +232,8 @@
     "dashboardTitle": "My statistics",
     "totalJobs": "Total jobs",
     "totalEarned": "Earnings",
-    "applicationsSent": "Applications sent"
+    "applicationsSent": "Applications sent",
+    "ratingPlaceholder": "Write your feedback about the work..."
   },
   "employer": {
     "dashboardTitle": "My job posts",
@@ -243,7 +252,14 @@
     "theme": "Theme",
     "dark": "Dark",
     "light": "Light",
-    "saved": "Saved"
+    "saved": "Saved",
+    "hourlyRate": "Hourly rate (so'm)",
+    "specialty": "Specialty",
+    "specialtyHint": "Employers find you by these professions",
+    "avatarUpdated": "Photo updated",
+    "imageOnly": "Please upload an image file",
+    "imageTooLarge": "Image must be under 5 MB",
+    "uploadError": "Could not upload photo. Please try again"
   },
   "notifications": {
     "title": "Notifications",

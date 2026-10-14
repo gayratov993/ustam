@@ -20,7 +20,7 @@ function JobsList() {
   const [showFilters, setShowFilters] = useState(false)
 
   const debouncedSearch = useDebounce(search, 400)
-  const { data: jobs, isLoading, isFetching } = useGetJobsQuery({
+  const { data: jobs, isLoading, isFetching, error } = useGetJobsQuery({
     search: debouncedSearch,
     categoryId: categoryId || undefined,
     city: city || undefined,
@@ -114,7 +114,7 @@ function JobsList() {
             <EmptyState
               icon={Briefcase}
               title={t('common.noData')}
-              description={t('common.tryAgain')}
+              description={error ? error.message || JSON.stringify(error) : t('common.tryAgain')}
             />
           ) : (
             <div className={`space-y-4 ${isFetching ? 'opacity-60' : ''}`}>

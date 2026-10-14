@@ -46,7 +46,7 @@ function EmployerDashboard() {
 
   const activeJobs = (jobs ?? []).filter((j) => j.status === 'open')
   const totalApplications = (jobs ?? []).reduce((s, j) => s + (j.application_count || 0), 0)
-  const hired = (jobs ?? []).length
+  const hired = (jobs ?? []).reduce((s, j) => s + (j.accepted_count || 0), 0)
 
   const handleDelete = async (id) => {
     if (window.confirm(t('common.delete') + '?')) {

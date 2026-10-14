@@ -21,8 +21,10 @@ function WorkerCard({ worker, index = 0 }) {
     >
       <Link to={`/workers/${worker.id}`}>
         <Card className="group text-center transition-shadow hover:shadow-lift">
-          <div className="mb-3 flex items-center justify-between">
-            <Badge variant={isNew ? 'accent' : 'slate'}>{t('worker.newWorker')}</Badge>
+          <div className="mb-3 flex h-5 items-center justify-between">
+            {isNew ? (
+              <Badge variant="accent">{t('worker.newWorker')}</Badge>
+            ) : null}
           </div>
           <div className="mb-3 flex justify-center">
             <Avatar src={worker.avatar_url} name={worker.full_name} size="lg" />

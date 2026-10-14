@@ -26,7 +26,10 @@ const fadeUp = {
 
 function Hero() {
   const { t } = useTranslation()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, profile } = useAuth()
+  const canPostJob = profile?.role === 'employer' || profile?.role === 'admin'
+  const workerTarget = isAuthenticated ? '/jobs' : '/auth/register'
+  const employerTarget = !isAuthenticated ? '/auth/register' : canPostJob ? '/jobs/new' : '/jobs'
 
   return (
     <section className="relative overflow-hidden">
@@ -71,13 +74,13 @@ function Hero() {
             transition={{ delay: 0.15 }}
             className="mt-8 flex flex-wrap gap-3"
           >
-            <Link to={isAuthenticated ? '/jobs' : '/auth/register'}>
+            <Link to={workerTarget}>
               <Button size="lg">
                 <Hammer className="h-5 w-5" />
                 {t('landing.ctaWorker')}
               </Button>
             </Link>
-            <Link to={isAuthenticated ? '/jobs/new' : '/auth/register'}>
+            <Link to={employerTarget}>
               <Button size="lg" variant="outline">
                 <BriefcaseBusiness className="h-5 w-5" />
                 {t('landing.ctaEmployer')}

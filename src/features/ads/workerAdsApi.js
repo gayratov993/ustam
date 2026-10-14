@@ -37,6 +37,21 @@ export const workerAdsApi = createApi({
       providesTags: ['WorkerAds'],
     }),
 
+    getWorkerAd: builder.query({
+      queryFn: toResponseArgs(async (sb, { id }) => {
+        const { data, error } = await sb
+          .from('worker_ads')
+          .select(
+            '*, worker:profiles!worker_ads_worker_id_fkey(id, full_name, avatar_url), category:categories(id, name_uz, name_ru, name_en, icon)'
+          )
+          .eq('id', id)
+          .maybeSingle()
+        if (error) throw error
+        return { data }
+      }),
+      providesTags: ['WorkerAds'],
+    }),
+
     createWorkerAd: builder.mutation({
       queryFn: toResponseArgs(async (sb, ad) =>
         sb.from('worker_ads').insert(ad).select().single()
@@ -63,6 +78,7 @@ export const workerAdsApi = createApi({
 export const {
   useGetWorkerAdsQuery,
   useGetMyWorkerAdsQuery,
+  useGetWorkerAdQuery,
   useCreateWorkerAdMutation,
   useUpdateWorkerAdMutation,
   useDeleteWorkerAdMutation,

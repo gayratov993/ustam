@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { AlertCircle } from 'lucide-react'
 import { RatingStars } from '@/components/rating/RatingStars'
 import { Button } from '@/components/ui/button'
 import { Textarea, Label } from '@/components/ui/input'
@@ -10,7 +11,7 @@ function ReviewForm({ jobId, reviewerId, revieweeId, onDone }) {
   const { t } = useTranslation()
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState('')
-  const [createReview, { isLoading }] = useCreateReviewMutation()
+  const [createReview, { isLoading, error }] = useCreateReviewMutation()
 
   const submit = async (e) => {
     e.preventDefault()
@@ -26,6 +27,12 @@ function ReviewForm({ jobId, reviewerId, revieweeId, onDone }) {
 
   return (
     <form onSubmit={submit} className="space-y-4">
+      {error && (
+        <div className="flex items-center gap-2 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-400">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          {error.data?.message || error.message || t('common.error')}
+        </div>
+      )}
       <div className="flex flex-col items-center gap-2 py-2">
         <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
           {t('worker.rating')}
@@ -40,7 +47,7 @@ function ReviewForm({ jobId, reviewerId, revieweeId, onDone }) {
         <Textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          placeholder="Fikringizni yozing..."
+          placeholder={t('worker.ratingPlaceholder')}
         />
       </div>
       <Button type="submit" className="w-full" loading={isLoading}>

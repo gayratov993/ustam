@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "WorkUp",
+    "name": "Ustam",
     "tagline": "Kunlik ish toping yoki ishchi yollang"
   },
   "nav": {
@@ -16,7 +16,8 @@
     "logout": "Chiqish",
     "login": "Kirish",
     "register": "Ro'yxatdan o'tish",
-    "notifications": "Bildirishnomalar"
+    "notifications": "Bildirishnomalar",
+    "chat": "Xabarlar"
   },
   "common": {
     "loading": "Yuklanmoqda...",
@@ -73,12 +74,18 @@
     "categories": "Kasb kategoriyalari",
     "selectCategories": "Kategoriyalarni tanlang",
     "skip": "Hozircha o'tkazib yuborish",
-    "phoneNotValid": "Telefon raqam noto'g'ri formatda"
+    "phoneNotValid": "Telefon raqam noto'g'ri formatda",
+    "resetTitle": "Yangi parol o'rnating",
+    "resetSubtitle": "Akkauntingiz uchun yangi parol kiriting",
+    "newPassword": "Yangi parol",
+    "updatePassword": "Parolni yangilash",
+    "passwordUpdated": "Parol muvaffaqiyatli yangilandi",
+    "resetInvalid": "Tiklash havolasi yaroqsiz yoki muddati o'tgan"
   },
   "landing": {
     "heroTitle1": "Kunlik ish toping",
     "heroTitle2": "yoki ishchi yollang",
-    "heroSubtitle": "WorkUp — quruvchidan tortib tozalovchigacha, yaqin atrofingizdagi ishchilar va ish beruvchilarni bog'laydigan platforma.",
+    "heroSubtitle": "Ustam — quruvchidan tortib tozalovchigacha, yaqin atrofingizdagi ishchilar va ish beruvchilarni bog'laydigan platforma.",
     "ctaWorker": "Ish qidiryapman",
     "ctaEmployer": "Ishchi kerak",
     "howItWorks": "Qanday ishlaydi?",
@@ -192,6 +199,7 @@
   "applications": {
     "title": "Zayavkalarim",
     "subtitle": "Barcha zayavkalaringiz holati bilan",
+    "all": "Barchasi",
     "pending": "Kutilmoqda",
     "accepted": "Qabul qilindi",
     "rejected": "Rad etildi",
@@ -224,7 +232,8 @@
     "dashboardTitle": "Mening statistika",
     "totalJobs": "Jami ishlar",
     "totalEarned": "Daromad",
-    "applicationsSent": "Yuborilgan zayavkalar"
+    "applicationsSent": "Yuborilgan zayavkalar",
+    "ratingPlaceholder": "Ish haqida fikringizni yozing..."
   },
   "employer": {
     "dashboardTitle": "Mening e'lonlarim",
@@ -243,7 +252,14 @@
     "theme": "Ko'rinish",
     "dark": "Qorong'i rejim",
     "light": "Yorug' rejim",
-    "saved": "Saqlangan"
+    "saved": "Saqlangan",
+    "hourlyRate": "Soatiga narx (so'm)",
+    "specialty": "Mutaxassislik",
+    "specialtyHint": "Ish beruvchilar sizni shu kasblar bo'yicha topadi",
+    "avatarUpdated": "Rasm yangilandi",
+    "imageOnly": "Faqat rasm faylini yuklang",
+    "imageTooLarge": "Rasm hajmi 5 MB dan oshmasin",
+    "uploadError": "Rasm yuklanmadi. Qayta urinib ko'ring"
   },
   "notifications": {
     "title": "Bildirishnomalar",

@@ -40,7 +40,7 @@ function Register() {
       role,
     })
     if (res.error) return
-    const userId = res.data?.session?.user?.id || res.data?.user?.id
+    const userId = res.data?.session?.user?.id
     if (userId) {
       await updateProfile({ id: userId, role })
       navigate('/auth/onboarding', { replace: true })
