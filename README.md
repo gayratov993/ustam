@@ -294,8 +294,8 @@ See [`supabase/schema.sql`](supabase/schema.sql) for the full definition.
 ### 1. Clone & install
 
 ```bash
-git clone https://github.com/gayratov993/WorkUpProject.git
-cd WorkUpProject
+git clone https://github.com/gayratov993/ustam.git
+cd ustam
 npm install
 ```
 

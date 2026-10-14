@@ -1,5 +1,5 @@
 -- ============================================================
--- WorkUp — Supabase Database Schema + Row Level Security
+-- Ustam — Supabase Database Schema + Row Level Security
 -- Ishga tushirish: Supabase SQL Editor → bu faylni yozing va Run
 -- ============================================================
 

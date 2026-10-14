@@ -1,5 +1,5 @@
 -- ============================================================
--- WorkUp — mavjud bazaga qo'llanadigan tuzatishlar (migration)
+-- Ustam — mavjud bazaga qo'llanadigan tuzatishlar (migration)
 -- Supabase SQL Editor → bu faylni yozing va Run.
 -- schema.sql ni qaytadan ishga tushirmasangiz ham bo'ladi.
 -- ============================================================
