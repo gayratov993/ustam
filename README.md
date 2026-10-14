@@ -60,7 +60,7 @@ The project was built as a portfolio piece demonstrating:
 > Deploy link will be added here.
 >
 > ```
-> https://ustam-demo.vercel.app  (placeholder)
+> https://work-up-project-eta.vercel.app/
 > ```
 
 **Demo accounts** (seed your own in Supabase):
