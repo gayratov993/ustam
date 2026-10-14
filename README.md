@@ -23,6 +23,7 @@
 - [Live Demo](#live-demo)
 - [Screenshots](#screenshots)
 - [Key Features](#key-features)
+- [How It Works](#how-it-works)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
 - [Project Structure](#project-structure)
@@ -31,6 +32,8 @@
 - [Environment Variables](#environment-variables)
 - [Available Scripts](#available-scripts)
 - [Internationalization](#internationalization)
+- [Security](#security)
+- [Deployment](#deployment)
 - [Roadmap](#roadmap)
 - [License](#license)
 
@@ -125,6 +128,34 @@ The project was built as a portfolio piece demonstrating:
 - Animations via **Framer Motion**
 - Toast notifications and error boundaries
 - Skeleton loaders and empty states
+
+---
+
+## How It Works
+
+Ustam has two primary roles — **workers** and **employers** — sharing one realtime layer.
+
+**Worker journey**
+
+1. Sign up as a **Worker** and pick profession categories during onboarding.
+2. Browse jobs (filter by category and city) or publish a **service ad**.
+3. Apply to a job with a short message and a proposed price.
+4. Get an in-app notification when accepted, then agree on details over **realtime chat**.
+5. Complete the job and receive a **rating & review**.
+
+**Employer journey**
+
+1. Sign up as an **Employer** and complete the company profile.
+2. Post a job — category, city/district, price and price type, number of workers and date.
+3. Review incoming applications and **accept** or **reject** candidates.
+4. Chat with the accepted worker and close the job as **completed**.
+5. Leave a **rating & review** for the worker.
+
+**Behind the scenes**
+
+- Applications and status changes fire **database triggers** that create notifications.
+- Chat messages stream in over **Supabase Realtime** and are cached by RTK Query.
+- Average rating and completed-job counts are computed by **RPC functions**.
 
 ---
 
@@ -343,6 +374,32 @@ Language is switchable at runtime and persisted. To add a language, create `publ
 - [ ] Worker verification / KYC badges
 - [ ] Reviews with photos
 - [ ] Automated tests (Vitest + Testing Library, Playwright E2E)
+
+---
+
+## Security
+
+- Access control is enforced **in the database** with PostgreSQL **Row Level Security** on every table — the client can never bypass it.
+- Only the **anon (public) key** is shipped to the browser. The **service-role key is never used** in the frontend.
+- Profiles are public-read / owner-write; chat messages are visible only to their participants; notifications only to their owner.
+- Notifications and profile creation run inside `SECURITY DEFINER` trigger functions to avoid privilege escalation.
+- Storage buckets are **public-read** but **authenticated-write**, with file-type and size validation on the client.
+
+---
+
+## Deployment
+
+The app is a static SPA and deploys to any static host (Vercel, Netlify, Cloudflare Pages).
+
+**Vercel**
+
+1. Import the repository on [vercel.com](https://vercel.com).
+2. Framework preset: **Vite** (build command `npm run build`, output directory `dist`).
+3. Add environment variables `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+4. Add your Vercel domain under Supabase → **Authentication → URL Configuration → Redirect URLs**.
+5. Deploy.
+
+Because it uses client-side routing, add an SPA rewrite so every route falls back to `index.html`.
 
 ---
 
